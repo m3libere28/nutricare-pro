@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import NotificationBell from './common/NotificationBell';
@@ -44,8 +45,15 @@ import ResourceGrid from './resources/ResourceGrid';
 import ProfileSettings from './settings/ProfileSettings';
 
 const NutriCarePro = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(location.pathname.slice(1) || 'dashboard');
+
+  useEffect(() => {
+    const path = location.pathname.slice(1) || 'dashboard';
+    setActiveTab(path);
+  }, [location]);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -162,7 +170,7 @@ const NutriCarePro = () => {
             <button
               key={item.id}
               onClick={() => {
-                setActiveTab(item.id);
+                navigate(`/${item.id === 'dashboard' ? '' : item.id}`);
                 setShowSidebar(false);
               }}
               className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg mb-1 ${
