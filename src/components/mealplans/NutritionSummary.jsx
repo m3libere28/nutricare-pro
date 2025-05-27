@@ -1,7 +1,7 @@
 import React from 'react';
 import { TrendingUp, Circle } from 'lucide-react';
 
-const NutritionSummary = ({ dailyGoals, currentTotals }) => {
+const NutritionSummary = ({ dailyGoals = {}, currentTotals = {} }) => {
   const calculatePercentage = (current, goal) => {
     return Math.min(Math.round((current / goal) * 100), 100);
   };
@@ -58,12 +58,22 @@ const NutritionSummary = ({ dailyGoals, currentTotals }) => {
             </div>
             <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className={`h-full bg-${item.color}-500 rounded-full transition-all duration-500`}
+                className={`h-full rounded-full transition-all duration-500 ${
+                  item.color === 'blue' ? 'bg-blue-500' :
+                  item.color === 'green' ? 'bg-green-500' :
+                  item.color === 'yellow' ? 'bg-yellow-500' :
+                  'bg-red-500'
+                }`}
                 style={{ width: `${calculatePercentage(item.current, item.goal)}%` }}
               />
             </div>
             <div className="flex items-center justify-between text-xs">
-              <span className={`text-${item.color}-600 font-medium`}>
+              <span className={`font-medium ${
+                item.color === 'blue' ? 'text-blue-600' :
+                item.color === 'green' ? 'text-green-600' :
+                item.color === 'yellow' ? 'text-yellow-600' :
+                'text-red-600'
+              }`}>
                 {calculatePercentage(item.current, item.goal)}%
               </span>
               {item.current > item.goal && (

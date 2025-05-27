@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ErrorBoundary from './common/ErrorBoundary';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -67,6 +68,32 @@ const NutriCarePro = () => {
   };
 
   const defaultAppointments = [];
+
+  // Default nutrition data
+  const defaultNutrition = {
+    dailyGoals: {
+      calories: 2000,
+      protein: 150,
+      carbs: 200,
+      fat: 65
+    },
+    currentTotals: {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0
+    }
+  };
+
+  // Default meal plan data
+  const defaultMealPlan = Array(7).fill(null).map(() => ({
+    breakfast: [],
+    lunch: [],
+    dinner: [],
+    snacks: []
+  }));
+
+  const [selectedWeek, setSelectedWeek] = useState(new Date());
   
   const [clientFilter, setClientFilter] = useState('all');
   const [showNewClientModal, setShowNewClientModal] = useState(false);
@@ -80,7 +107,7 @@ const NutriCarePro = () => {
   const [showAddMealModal, setShowAddMealModal] = useState(false);
   const [selectedMealDay, setSelectedMealDay] = useState(null);
   const [selectedMealType, setSelectedMealType] = useState(null);
-  const [selectedWeek, setSelectedWeek] = useState(new Date());
+  const [selectedWeekState, setSelectedWeekState] = useState(new Date());
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
   const [showNewAssessmentForm, setShowNewAssessmentForm] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState(null);
@@ -308,15 +335,21 @@ const NutriCarePro = () => {
           {activeTab === 'appointments' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <AppointmentCalendar
-                  selectedDate={selectedDate}
-                  onDateSelect={setSelectedDate}
-                />
+                <ErrorBoundary>
+                  <AppointmentCalendar
+                    selectedDate={selectedDate}
+                    onDateSelect={setSelectedDate}
+                  />
+                </ErrorBoundary>
               </div>
               <div>
-                <AppointmentStats appointments={defaultAppointments} />
+                <ErrorBoundary>
+                  <AppointmentStats appointments={defaultAppointments} />
+                </ErrorBoundary>
                 <div className="mt-6">
-                  <AppointmentList />
+                  <ErrorBoundary>
+                    <AppointmentList />
+                  </ErrorBoundary>
                 </div>
               </div>
             </div>
@@ -325,10 +358,14 @@ const NutriCarePro = () => {
           {activeTab === 'assessments' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <AssessmentList />
+                <ErrorBoundary>
+                  <AssessmentList />
+                </ErrorBoundary>
               </div>
               <div>
-                <AssessmentStats stats={assessmentStats} />
+                <ErrorBoundary>
+                  <AssessmentStats stats={assessmentStats} />
+                </ErrorBoundary>
               </div>
             </div>
           )}
@@ -336,15 +373,33 @@ const NutriCarePro = () => {
           {activeTab === 'mealPlans' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <MealPlanCalendar
-                  selectedWeek={selectedWeek}
-                  onWeekChange={setSelectedWeek}
-                />
+                <ErrorBoundary>
+                  <MealPlanCalendar
+                    selectedWeek={selectedWeek}
+                    onWeekChange={(days) => {
+                      const newDate = new Date(selectedWeek);
+                      newDate.setDate(newDate.getDate() + days);
+                      setSelectedWeek(newDate);
+                    }}
+                    mealPlan={defaultMealPlan}
+                    onAddMeal={(dayIndex, mealType) => {
+                      // TODO: Implement meal addition
+                      console.log('Add meal:', dayIndex, mealType);
+                    }}
+                  />
+                </ErrorBoundary>
               </div>
               <div>
-                <NutritionSummary />
+                <ErrorBoundary>
+                  <NutritionSummary 
+                    dailyGoals={defaultNutrition.dailyGoals}
+                    currentTotals={defaultNutrition.currentTotals}
+                  />
+                </ErrorBoundary>
                 <div className="mt-6">
-                  <RecipeCard />
+                  <ErrorBoundary>
+                    <RecipeCard />
+                  </ErrorBoundary>
                 </div>
               </div>
             </div>
