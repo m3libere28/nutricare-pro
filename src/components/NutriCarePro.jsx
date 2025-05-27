@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../contexts/NotificationContext';
+import NotificationBell from './common/NotificationBell';
+import NewsFeed from './dashboard/NewsFeed';
 import {
   Activity,
   Bell,
+  BookOpen,
   Calendar,
   ChevronDown,
   ClipboardList,
@@ -39,6 +44,7 @@ import ResourceGrid from './resources/ResourceGrid';
 import ProfileSettings from './settings/ProfileSettings';
 
 const NutriCarePro = () => {
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showSidebar, setShowSidebar] = useState(true);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -64,8 +70,7 @@ const NutriCarePro = () => {
   const [resourceType, setResourceType] = useState('all');
   const [resourceQuery, setResourceQuery] = useState('');
   const [savedResources, setSavedResources] = useState([]);
-
-  const [resources] = useState([
+  const [resources, setResources] = useState([
     {
       id: 1,
       type: 'website',
@@ -247,12 +252,14 @@ const NutriCarePro = () => {
       type: 'Follow-up',
       date: '2025-05-28',
       time: '15:00',
-      duration: '30',
-      notes: 'Review meal plan adjustments'
+      email: 'michael.brown@example.com',
+      phone: '555-0123',
+      allergies: ['Shellfish', 'Peanuts'],
+      notes: 'Needs meal plan for work travel'
     }
   ]);
 
-  const clients = [
+  const [clients, setClients] = useState([
     {
       id: 1,
       name: 'Sarah Johnson',
@@ -313,9 +320,9 @@ const NutriCarePro = () => {
       progress: 85,
       image: 'https://i.pravatar.cc/150?img=5'
     }
-  ];
+  ]);
 
-  const recipes = [
+  const [recipes, setRecipes] = useState([
     {
       id: 1,
       name: 'Mediterranean Quinoa Bowl',
@@ -387,7 +394,7 @@ const NutriCarePro = () => {
       ],
       tags: ['High-Protein', 'Vegetarian', 'Breakfast']
     }
-  ];
+  ]);
 
   const [mealPlan, setMealPlan] = useState(Array(7).fill().map(() => ({
     breakfast: [],
@@ -486,13 +493,7 @@ const NutriCarePro = () => {
               <span className="ml-4 text-xl font-semibold text-gray-900">NutriCare Pro</span>
             </div>
             <div className="flex items-center space-x-4">
-              <button
-                className="relative p-2 hover:bg-gray-100 rounded-lg"
-                onClick={() => setShowUserMenu(!showUserMenu)}
-              >
-                <Bell className="w-5 h-5 text-gray-500" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-              </button>
+              <NotificationBell />
               <button
                 className="relative p-2 hover:bg-gray-100 rounded-lg"
                 onClick={() => setActiveTab('settings')}
@@ -505,13 +506,13 @@ const NutriCarePro = () => {
                   className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg"
                 >
                   <img
-                    src="https://i.pravatar.cc/150?img=4"
-                    alt="Emily Torres-Medaglia"
+                    src={user.avatar}
+                    alt={user.name}
                     className="w-8 h-8 rounded-full"
                   />
                   <div className="text-left">
-                    <div className="text-sm font-medium text-gray-900">Emily Torres-Medaglia</div>
-                    <div className="text-xs text-gray-500">R.D.N.</div>
+                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                    <div className="text-xs text-gray-500">{user.role}</div>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-500" />
                 </button>
@@ -526,7 +527,10 @@ const NutriCarePro = () => {
                     >
                       Profile Settings
                     </button>
-                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <button 
+                      onClick={() => logout()}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
                       Sign Out
                     </button>
                   </div>
@@ -536,7 +540,6 @@ const NutriCarePro = () => {
           </div>
         </div>
       </nav>
-
 
       {/* Sidebar */}
       <aside className={`fixed left-0 top-16 bottom-0 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${showSidebar ? 'translate-x-0' : '-translate-x-full'} z-40`}>
@@ -562,7 +565,7 @@ const NutriCarePro = () => {
             <h1 className="text-2xl font-semibold text-gray-900">{getActiveTabName()}</h1>
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <Search className="search-icon" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search..."
@@ -588,40 +591,68 @@ const NutriCarePro = () => {
           {/* Tab Content */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             {activeTab === 'dashboard' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="col-span-2 bg-gradient-to-br from-blue-50 to-teal-50 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Overview</h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-white rounded-lg p-4 shadow-sm">
-                      <h4 className="text-sm text-gray-500">Appointments Today</h4>
-                      <p className="text-2xl font-semibold text-gray-900 mt-1">5</p>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+                      <div>
+                        <p className="text-sm text-gray-500">Total Appointments</p>
+                        <p className="text-2xl font-bold text-gray-900">24</p>
+                      </div>
                     </div>
-                    <div className="bg-white rounded-lg p-4 shadow-sm">
-                      <h4 className="text-sm text-gray-500">Pending Assessments</h4>
-                      <p className="text-2xl font-semibold text-gray-900 mt-1">3</p>
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Clients</h3>
+                      <div>
+                        <p className="text-sm text-gray-500">Current Month</p>
+                        <p className="text-2xl font-bold text-gray-900">12</p>
+                      </div>
                     </div>
-                    <div className="bg-white rounded-lg p-4 shadow-sm">
-                      <h4 className="text-sm text-gray-500">New Messages</h4>
-                      <p className="text-2xl font-semibold text-gray-900 mt-1">2</p>
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Success Rate</h3>
+                      <div>
+                        <p className="text-sm text-gray-500">Goal Achievement</p>
+                        <p className="text-2xl font-bold text-green-600">89%</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium text-gray-900">New Appointment</p>
+                          <p className="text-sm text-gray-500">Sarah Johnson - Tomorrow at 2 PM</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <FileText className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium text-gray-900">Assessment Completed</p>
+                          <p className="text-sm text-gray-500">Michael Smith - 2 hours ago</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                          <BookOpen className="w-4 h-4 text-purple-600" />
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-sm font-medium text-gray-900">Meal Plan Updated</p>
+                          <p className="text-sm text-gray-500">Emma Davis - Yesterday</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="bg-white rounded-xl p-6 border border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                  <div className="space-y-3">
-                    <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50">
-                      <Calendar className="w-5 h-5" />
-                      <span>Schedule Appointment</span>
-                    </button>
-                    <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50">
-                      <ClipboardList className="w-5 h-5" />
-                      <span>Create Assessment</span>
-                    </button>
-                    <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50">
-                      <Utensils className="w-5 h-5" />
-                      <span>New Meal Plan</span>
-                    </button>
-                  </div>
+
+                <div className="lg:col-span-1">
+                  <NewsFeed />
                 </div>
               </div>
             )}
@@ -765,20 +796,24 @@ const NutriCarePro = () => {
                   <div className="lg:col-span-2">
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-semibold text-gray-900">
-                          {selectedDate ? (
-                            `Appointments for ${selectedDate.toLocaleDateString()}`
-                          ) : (
-                            'All Appointments'
-                          )}
-                        </h2>
-                        <button
-                          onClick={() => setShowSelectClientModal(true)}
-                          className="primary-button"
-                        >
-                          <Plus className="w-5 h-5" />
-                          <span>New Appointment</span>
-                        </button>
+                        <div className="flex-1">
+                          <h2 className="text-lg font-semibold text-gray-900">
+                            {selectedDate ? (
+                              `Appointments for ${selectedDate.toLocaleDateString()}`
+                            ) : (
+                              'All Appointments'
+                            )}
+                          </h2>
+                        </div>
+                        <div className="flex-shrink-0 ml-4">
+                          <button
+                            onClick={() => setShowSelectClientModal(true)}
+                            className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            <span>New Appointment</span>
+                          </button>
+                        </div>
                         <button
                           className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                           onClick={() => {
