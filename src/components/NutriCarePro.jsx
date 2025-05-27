@@ -57,6 +57,14 @@ const NutriCarePro = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Default stats for AssessmentStats
+  const assessmentStats = {
+    total: 0,
+    thisMonth: 0,
+    pending: 0,
+    completionRate: 0
+  };
   const [clientFilter, setClientFilter] = useState('all');
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [showClientProfileModal, setShowClientProfileModal] = useState(false);
@@ -317,7 +325,7 @@ const NutriCarePro = () => {
                 <AssessmentList />
               </div>
               <div>
-                <AssessmentStats />
+                <AssessmentStats stats={assessmentStats} />
               </div>
             </div>
           )}
