@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ErrorBoundary from './common/ErrorBoundary';
+import ErrorBoundary from '../components/common/ErrorBoundary';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -69,8 +69,8 @@ const NutriCarePro = () => {
 
   const defaultAppointments = [];
 
-  // Default nutrition data
-  const defaultNutrition = {
+  // Nutrition state
+  const [nutrition, setNutrition] = useState({
     dailyGoals: {
       calories: 2000,
       protein: 150,
@@ -83,15 +83,16 @@ const NutriCarePro = () => {
       carbs: 0,
       fat: 0
     }
-  };
+  });
 
   // Default meal plan data
-  const defaultMealPlan = Array(7).fill(null).map(() => ({
+  // Initialize meal plan state
+  const [mealPlan, setMealPlan] = useState(Array(7).fill(null).map(() => ({
     breakfast: [],
     lunch: [],
     dinner: [],
     snacks: []
-  }));
+  })));
 
   const [selectedWeek, setSelectedWeek] = useState(new Date());
   
@@ -107,7 +108,7 @@ const NutriCarePro = () => {
   const [showAddMealModal, setShowAddMealModal] = useState(false);
   const [selectedMealDay, setSelectedMealDay] = useState(null);
   const [selectedMealType, setSelectedMealType] = useState(null);
-  const [selectedWeekState, setSelectedWeekState] = useState(new Date());
+
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
   const [showNewAssessmentForm, setShowNewAssessmentForm] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState(null);
@@ -381,10 +382,11 @@ const NutriCarePro = () => {
                       newDate.setDate(newDate.getDate() + days);
                       setSelectedWeek(newDate);
                     }}
-                    mealPlan={defaultMealPlan}
+                    mealPlan={mealPlan}
                     onAddMeal={(dayIndex, mealType) => {
-                      // TODO: Implement meal addition
-                      console.log('Add meal:', dayIndex, mealType);
+                      setSelectedMealDay(dayIndex);
+                      setSelectedMealType(mealType);
+                      setShowAddMealModal(true);
                     }}
                   />
                 </ErrorBoundary>
@@ -392,8 +394,8 @@ const NutriCarePro = () => {
               <div>
                 <ErrorBoundary>
                   <NutritionSummary 
-                    dailyGoals={defaultNutrition.dailyGoals}
-                    currentTotals={defaultNutrition.currentTotals}
+                    dailyGoals={nutrition.dailyGoals}
+                    currentTotals={nutrition.currentTotals}
                   />
                 </ErrorBoundary>
                 <div className="mt-6">
@@ -471,6 +473,28 @@ const NutriCarePro = () => {
         onClose={() => setShowAddMealModal(false)}
         selectedDay={selectedMealDay}
         mealType={selectedMealType}
+        onAddMeal={(recipe) => {
+          if (selectedMealDay !== null && selectedMealType) {
+            const newMealPlan = [...mealPlan];
+            const mealTypeKey = selectedMealType.toLowerCase();
+            if (!newMealPlan[selectedMealDay][mealTypeKey]) {
+              newMealPlan[selectedMealDay][mealTypeKey] = [];
+            }
+            newMealPlan[selectedMealDay][mealTypeKey].push(recipe);
+            setMealPlan(newMealPlan);
+            
+            // Update nutrition totals
+            const newTotals = { ...nutrition.currentTotals };
+            newTotals.calories += recipe.calories || 0;
+            setNutrition(prev => ({
+              ...prev,
+              currentTotals: newTotals
+            }));
+          }
+          setShowAddMealModal(false);
+          setSelectedMealDay(null);
+          setSelectedMealType(null);
+        }}
       />
       <AssessmentForm
         isOpen={showAssessmentForm || showNewAssessmentForm}

@@ -1,17 +1,23 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
-const MealPlanCalendar = ({ selectedWeek, onWeekChange, mealPlan, onAddMeal }) => {
+const MealPlanCalendar = ({ selectedWeek = new Date(), onWeekChange = () => {}, mealPlan = [], onAddMeal = () => {} }) => {
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 
   const getDateForDay = (dayIndex) => {
     const date = new Date(selectedWeek);
+    // Get to Monday first
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
+    date.setDate(diff);
+    // Then add the days
     date.setDate(date.getDate() + dayIndex);
     return date;
   };
 
   const formatDate = (date) => {
+    if (!(date instanceof Date) || isNaN(date)) return '';
     return new Intl.DateTimeFormat('en-US', { 
       month: 'short', 
       day: 'numeric' 

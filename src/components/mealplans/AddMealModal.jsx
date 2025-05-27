@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Search, Filter, Plus } from 'lucide-react';
 
-const AddMealModal = ({ isOpen, onClose, recipes, onAddMeal }) => {
+const AddMealModal = ({ isOpen, onClose, recipes = [], onAddMeal = () => {} }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDiets, setSelectedDiets] = useState([]);
@@ -11,7 +11,40 @@ const AddMealModal = ({ isOpen, onClose, recipes, onAddMeal }) => {
   const categories = ['all', 'Breakfast', 'Lunch', 'Dinner', 'Snacks'];
   const dietaryOptions = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Keto', 'Low-Carb'];
 
-  const filteredRecipes = recipes.filter(recipe => {
+  // Default recipes if none provided
+  const defaultRecipes = [
+    {
+      id: 1,
+      name: 'Oatmeal with Berries',
+      description: 'Hearty oatmeal topped with fresh berries and honey',
+      calories: 350,
+      category: 'Breakfast',
+      tags: ['Vegetarian', 'High-Fiber'],
+      image: 'https://source.unsplash.com/featured/?oatmeal'
+    },
+    {
+      id: 2,
+      name: 'Grilled Chicken Salad',
+      description: 'Fresh mixed greens with grilled chicken breast',
+      calories: 400,
+      category: 'Lunch',
+      tags: ['High-Protein', 'Low-Carb'],
+      image: 'https://source.unsplash.com/featured/?salad'
+    },
+    {
+      id: 3,
+      name: 'Salmon with Quinoa',
+      description: 'Baked salmon fillet with quinoa and roasted vegetables',
+      calories: 550,
+      category: 'Dinner',
+      tags: ['High-Protein', 'Omega-3'],
+      image: 'https://source.unsplash.com/featured/?salmon'
+    }
+  ];
+
+  const allRecipes = recipes.length > 0 ? recipes : defaultRecipes;
+
+  const filteredRecipes = allRecipes.filter(recipe => {
     const matchesSearch = recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       recipe.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || recipe.category === selectedCategory;
