@@ -135,9 +135,51 @@ const NutriCarePro = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Mobile Sidebar */}
+      <div
+        className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity duration-300 ease-in-out z-20 ${
+          showSidebar ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setShowSidebar(false)}
+      />
+      <aside
+        className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-30 ${
+          showSidebar ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800">NutriCare Pro</h2>
+          <button
+            onClick={() => setShowSidebar(false)}
+            className="text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <nav className="mt-4 px-2">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => {
+                setActiveTab(item.id);
+                setShowSidebar(false);
+              }}
+              className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg mb-1 ${
+                activeTab === item.id
+                  ? 'text-blue-600 bg-blue-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              {item.icon}
+              <span className="ml-3">{item.name}</span>
+            </button>
+          ))}
+        </nav>
+      </aside>
+
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
@@ -176,7 +218,7 @@ const NutriCarePro = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
         <div className="grid grid-cols-1 gap-6">
           {activeTab === 'dashboard' && (
             <div>
