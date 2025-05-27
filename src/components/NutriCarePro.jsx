@@ -58,13 +58,16 @@ const NutriCarePro = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Default stats for AssessmentStats
+  // Default data for components
   const assessmentStats = {
     total: 0,
     thisMonth: 0,
     pending: 0,
     completionRate: 0
   };
+
+  const defaultAppointments = [];
+  
   const [clientFilter, setClientFilter] = useState('all');
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [showClientProfileModal, setShowClientProfileModal] = useState(false);
@@ -311,7 +314,7 @@ const NutriCarePro = () => {
                 />
               </div>
               <div>
-                <AppointmentStats />
+                <AppointmentStats appointments={defaultAppointments} />
                 <div className="mt-6">
                   <AppointmentList />
                 </div>
