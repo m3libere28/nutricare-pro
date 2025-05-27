@@ -41,12 +41,8 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
     rollupOptions: {
-      external: ['react-router-dom'],
       output: {
-        manualChunks: undefined,
-        globals: {
-          'react-router-dom': 'ReactRouterDOM'
-        }
+        manualChunks: undefined
       }
     }
   },
