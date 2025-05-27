@@ -479,18 +479,22 @@ const NutriCarePro = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
-        <div className="px-4 mx-auto max-w-7xl">
-          <div className="flex items-center justify-between h-16">
+    <div className="min-h-screen bg-gray-100">
+      {/* Top Navigation */}
+      <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
             <div className="flex items-center">
               <button
                 onClick={() => setShowSidebar(!showSidebar)}
-                className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100"
+                className="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
+                aria-label="Open sidebar"
               >
-                <Menu className="w-5 h-5" />
+                {showSidebar ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
-              <span className="ml-4 text-xl font-semibold text-gray-900">NutriCare Pro</span>
+              <div className="ml-4 flex lg:ml-0">
+                <span className="font-bold text-xl text-blue-600">NutriCare Pro</span>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <NotificationBell />
@@ -533,17 +537,24 @@ const NutriCarePro = () => {
                     >
                       Sign Out
                     </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
 
       {/* Sidebar */}
-      <aside className={`fixed left-0 top-16 bottom-0 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${showSidebar ? 'translate-x-0' : '-translate-x-full'} z-40`}>
-        <nav className="mt-5 px-2">
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
+          showSidebar ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 lg:static lg:inset-0`}
+      >
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+          <span className="font-bold text-xl text-blue-600 lg:hidden">NutriCare Pro</span>
+          <button
+            onClick={() => setShowSidebar(false)}
+            className="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
+            aria-label="Close sidebar"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <nav className="mt-5 px-2 space-y-1">
           {navItems.map((item) => (
             <button
               key={item.id}
@@ -558,16 +569,19 @@ const NutriCarePro = () => {
       </aside>
 
       {/* Main Content */}
-      <main className={`pt-16 ${showSidebar ? 'pl-64' : 'pl-0'} transition-all duration-300`}>
-        <div className="p-6">
-          {/* Content Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-semibold text-gray-900">{getActiveTabName()}</h1>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
+      <main
+        className={`flex-1 relative z-0 overflow-y-auto pt-16 pb-6 focus:outline-none md:py-6 ${
+          showSidebar ? 'lg:pl-64' : ''
+        } transition-all duration-300`}
+      >
+        <div className="px-4 sm:px-6 md:px-8">
+          {/* Main content area */}
+          <div className="flex-1 overflow-y-auto pt-16 lg:pt-0">
+            <div className="py-6">
+              <div className="px-4 sm:px-6 lg:px-8">
+                {/* Content Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <h1 className="text-2xl font-semibold text-gray-900">{getActiveTabName()}</h1>
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -694,7 +708,7 @@ const NutriCarePro = () => {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {filteredClients.map(client => (
                     <div key={client.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
                       <div className="p-6">
