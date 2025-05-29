@@ -32,12 +32,11 @@ const ResourceCard = ({ resource, onSave }) => {
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-4">
-            <div className={`p-2 rounded-lg ${
-              resource.type === 'article' ? 'bg-blue-50 text-blue-600' :
+            <div className={`p-2 rounded-lg ${resource.thumbnail ? 'bg-blue-50 text-blue-600' : 
               resource.type === 'video' ? 'bg-red-50 text-red-600' :
               resource.type === 'website' ? 'bg-purple-50 text-purple-600' :
               'bg-green-50 text-green-600'
-            }`}>
+            }`} style={{ backgroundImage: `url(${resource.thumbnail || '/images/placeholder.svg'})` }}>
               <Icon className="w-6 h-6" />
             </div>
             <div className="space-y-1">

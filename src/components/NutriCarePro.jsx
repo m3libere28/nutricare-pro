@@ -336,7 +336,7 @@ const NutriCarePro = () => {
       date: '2025-04-15',
       url: 'https://www.health.harvard.edu/staying-healthy/foods-that-fight-inflammation',
       peerReviewed: true,
-      thumbnail: 'https://images.unsplash.com/photo-1559058789-672da06263d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+      thumbnail: "/images/default-avatar.svg",
       tags: ['Diet', 'Cardiovascular Health', 'Research']
     },
     {
@@ -544,7 +544,7 @@ const NutriCarePro = () => {
         </button>
         <div className="flex items-center">
           <img
-            src="/logo.png"
+            src="/images/logo.svg"
             alt="NutriCare Pro"
             className="h-8 w-8"
           />
@@ -574,7 +574,7 @@ const NutriCarePro = () => {
           <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200 lg:border-none">
             <div className="flex items-center">
               <img
-                src="/logo.png"
+                src="/images/logo.svg"
                 alt="NutriCare Pro"
                 className="h-8 w-8"
               />
