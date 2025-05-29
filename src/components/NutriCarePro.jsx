@@ -534,251 +534,294 @@ const NutriCarePro = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden touch-manipulation">
-      <div className="flex">
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4">
+        <button
+          onClick={() => setShowSidebar(!showSidebar)}
+          className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+        <div className="flex items-center">
+          <img
+            src="/logo.png"
+            alt="NutriCare Pro"
+            className="h-8 w-8"
+          />
+          <span className="ml-2 text-xl font-semibold text-gray-800">NutriCare Pro</span>
+        </div>
+        <button
+          onClick={() => setShowNotifications(!showNotifications)}
+          className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+        >
+          <Bell className="h-6 w-6" />
+        </button>
+      </header>
+
+      <div className="flex h-screen pt-16 lg:pt-0">
+        {/* Overlay */}
+        {showSidebar && (
+          <div
+            className="fixed inset-0 bg-gray-600 bg-opacity-50 transition-opacity lg:hidden z-40"
+            onClick={() => setShowSidebar(false)}
+          />
+        )}
+
         {/* Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
-          <div className="p-4">
-            <h1 className="text-2xl font-bold text-gray-900">NutriCarePro</h1>
+        <div
+          className={`fixed inset-y-0 left-0 z-40 w-64 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${showSidebar ? 'translate-x-0' : '-translate-x-full'}`}
+        >
+          <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200 lg:border-none">
+            <div className="flex items-center">
+              <img
+                src="/logo.png"
+                alt="NutriCare Pro"
+                className="h-8 w-8"
+              />
+              <span className="ml-2 text-xl font-semibold text-gray-800">NutriCare Pro</span>
+            </div>
+            <button
+              onClick={() => setShowSidebar(false)}
+              className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            >
+              <X className="h-6 w-6" />
+            </button>
           </div>
-          <nav className="mt-4">
-            {navigation.map(item => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center px-4 py-2 text-sm font-medium ${activeTab === item.id ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'}`}
-              >
-                {item.icon}
-                <span className="ml-3">{item.name}</span>
-              </button>
-            ))}
-          </nav>
+
+          <div className="flex-1 overflow-y-auto pt-5 pb-4">
+            <nav className="px-4 space-y-1">
+              {navigation.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    navigate(`/${item.id}`);
+                    setActiveTab(item.id);
+                    setShowSidebar(false);
+                  }}
+                  className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg w-full transition-colors ${activeTab === item.id ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                >
+                  {item.icon}
+                  <span className="ml-3">{item.name}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        {/* Main content */}
-        <div className="flex-1 min-w-0">
-          {/* Header */}
-          <div className="bg-white border-b border-gray-200 px-4 py-3">
-            <div className="flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8 safe-area-inset-top">
-              <h2 className="text-lg font-medium text-gray-900">
-                {navigation.find(item => item.id === activeTab)?.name}
-              </h2>
-              <div className="flex items-center space-x-4">
+        {/* Tab content */}
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 pb-safe">
+          {activeTab === 'dashboard' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900">Upcoming Sessions</h3>
+                  <p className="mt-2 text-3xl font-bold text-blue-600">
+                    {appointments.filter(a => new Date(a.date) > new Date()).length}
+                  </p>
+                </div>
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900">Active Clients</h3>
+                  <p className="mt-2 text-3xl font-bold text-blue-600">
+                    {clients.filter(c => c.status === 'Active').length}
+                  </p>
+                </div>
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900">Pending Assessments</h3>
+                  <p className="mt-2 text-3xl font-bold text-blue-600">
+                    {assessments.filter(a => a.status === 'Pending Review').length}
+                  </p>
+                </div>
+              </div>
+              <NewsFeed />
+            </div>
+          )}
+
+          {activeTab === 'clients' && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Clients</h2>
                 <button
-                  onClick={() => setShowNotifications(prev => !prev)}
-                  className="p-1 text-gray-400 hover:text-gray-500"
+                  onClick={() => setShowNewClientModal(true)}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                 >
-                  <Bell className="w-6 h-6" />
+                  <Plus className="-ml-1 mr-2 h-5 w-5" />
+                  New Client
                 </button>
-                <button className="p-1">
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Profile"
-                    className="w-8 h-8 rounded-full"
+              </div>
+              <ClientGrid 
+                clients={clients}
+                onClientSelect={(client) => {
+                  setSelectedClient(client);
+                  setShowClientProfileModal(true);
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === 'appointments' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
+                <button
+                  onClick={() => {
+                    setIsSchedulingNewAppointment(true);
+                    setShowSelectClientModal(true);
+                  }}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="-ml-1 mr-2 h-5 w-5" />
+                  Schedule Session
+                </button>
+              </div>
+              <AppointmentStats appointments={appointments} />
+              <div className="bg-white shadow rounded-lg p-6">
+                <AppointmentCalendar 
+                  appointments={appointments}
+                  onDateSelect={(date) => {
+                    setSelectedDate(date);
+                    setIsSchedulingNewAppointment(true);
+                    setShowSelectClientModal(true);
+                  }}
+                />
+              </div>
+              <AppointmentList 
+                appointments={appointments}
+                onAppointmentSelect={(appointment) => {
+                  setSelectedClient(clients.find(c => c.id === appointment.clientId));
+                  setShowScheduleSessionModal(true);
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === 'assessments' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">Assessments</h2>
+                <button
+                  onClick={() => {
+                    setSelectedAssessment(null);
+                    setShowNewAssessmentForm(true);
+                  }}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="-ml-1 mr-2 h-5 w-5" />
+                  New Assessment
+                </button>
+              </div>
+              <AssessmentStats assessments={assessments} />
+              <AssessmentList 
+                assessments={assessments}
+                onAssessmentSelect={(assessment) => {
+                  setSelectedAssessment(assessment);
+                  setShowAssessmentForm(true);
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === 'resources' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">Resources</h2>
+                <button
+                  onClick={() => setShowAddResourceModal(true)}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="-ml-1 mr-2 h-5 w-5" />
+                  Add Resource
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="relative flex-1 max-w-xs">
+                  <input
+                    type="text"
+                    placeholder="Search resources..."
+                    value={resourceQuery}
+                    onChange={(e) => setResourceQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 border border-gray-300 rounded-lg p-1">
+                <button
+                  onClick={() => setResourceView('grid')}
+                  className={`p-1.5 rounded ${resourceView === 'grid' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                  title="Grid View"
+                >
+                  <LayoutGrid className="w-4 h-4 text-gray-600" />
                 </button>
+                <button
+                  onClick={() => setResourceView('list')}
+                  className={`p-1.5 rounded ${resourceView === 'list' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                  title="List View"
+                >
+                  <List className="w-4 h-4 text-gray-600" />
+                </button>
+              </div>
+
+              <div className="mb-6 flex flex-wrap gap-2">
+                {['all', 'article', 'video', 'pdf', 'course', 'tool', 'webinar'].map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setResourceType(type)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium
+                      ${resourceType === type
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              <div className={resourceView === 'grid' ? 
+                "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : 
+                "space-y-4"
+              }>
+                {renderResources()}
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Tab content */}
-          <div className="p-4 sm:p-6">
-            {activeTab === 'dashboard' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  <div className="bg-white shadow rounded-lg p-6">
-                    <h3 className="text-lg font-medium text-gray-900">Upcoming Sessions</h3>
-                    <p className="mt-2 text-3xl font-bold text-blue-600">
-                      {appointments.filter(a => new Date(a.date) > new Date()).length}
-                    </p>
-                  </div>
-                  <div className="bg-white shadow rounded-lg p-6">
-                    <h3 className="text-lg font-medium text-gray-900">Active Clients</h3>
-                    <p className="mt-2 text-3xl font-bold text-blue-600">
-                      {clients.filter(c => c.status === 'Active').length}
-                    </p>
-                  </div>
-                  <div className="bg-white shadow rounded-lg p-6">
-                    <h3 className="text-lg font-medium text-gray-900">Pending Assessments</h3>
-                    <p className="mt-2 text-3xl font-bold text-blue-600">
-                      {assessments.filter(a => a.status === 'Pending Review').length}
-                    </p>
-                  </div>
-                </div>
-                <NewsFeed />
-              </div>
-            )}
-
-            {activeTab === 'clients' && (
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Clients</h2>
-                  <button
-                    onClick={() => setShowNewClientModal(true)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Plus className="-ml-1 mr-2 h-5 w-5" />
-                    New Client
-                  </button>
-                </div>
-                <ClientGrid 
-                  clients={clients}
-                  onClientSelect={(client) => {
-                    setSelectedClient(client);
-                    setShowClientProfileModal(true);
-                  }}
-                />
-              </div>
-            )}
-
-            {activeTab === 'appointments' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
-                  <button
-                    onClick={() => {
-                      setIsSchedulingNewAppointment(true);
-                      setShowSelectClientModal(true);
-                    }}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Plus className="-ml-1 mr-2 h-5 w-5" />
-                    Schedule Session
-                  </button>
-                </div>
-                <AppointmentStats appointments={appointments} />
-                <div className="bg-white shadow rounded-lg p-6">
-                  <AppointmentCalendar 
-                    appointments={appointments}
-                    onDateSelect={(date) => {
-                      setSelectedDate(date);
-                      setIsSchedulingNewAppointment(true);
-                      setShowSelectClientModal(true);
-                    }}
-                  />
-                </div>
-                <AppointmentList 
-                  appointments={appointments}
-                  onAppointmentSelect={(appointment) => {
-                    setSelectedClient(clients.find(c => c.id === appointment.clientId));
-                    setShowScheduleSessionModal(true);
-                  }}
-                />
-              </div>
-            )}
-
-            {activeTab === 'assessments' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-gray-900">Assessments</h2>
-                  <button
-                    onClick={() => {
-                      setSelectedAssessment(null);
-                      setShowNewAssessmentForm(true);
-                    }}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Plus className="-ml-1 mr-2 h-5 w-5" />
-                    New Assessment
-                  </button>
-                </div>
-                <AssessmentStats assessments={assessments} />
-                <AssessmentList 
-                  assessments={assessments}
-                  onAssessmentSelect={(assessment) => {
-                    setSelectedAssessment(assessment);
-                    setShowAssessmentForm(true);
-                  }}
-                />
-              </div>
-            )}
-
-            {activeTab === 'resources' && (
-              <div>
-                <div className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${showSidebar ? 'translate-x-0' : '-translate-x-full'} safe-area-inset-left`}>
-                  <div className="flex items-center space-x-4">
-                    <h2 className="text-2xl font-bold text-gray-900">Resources</h2>
-                    <button
-                      onClick={() => setShowAddResourceModal(true)}
-                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      <Plus className="-ml-1 mr-2 h-4 w-4" />
-                      Add Resource
-                    </button>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        type="text"
-                        placeholder="Search resources..."
-                        value={resourceQuery}
-                        onChange={(e) => setResourceQuery(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2 border border-gray-300 rounded-lg p-1">
-                      <button
-                        onClick={() => setResourceView('grid')}
-                        className={`p-1.5 rounded ${resourceView === 'grid' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
-                        title="Grid View"
-                      >
-                        <LayoutGrid className="w-4 h-4 text-gray-600" />
-                      </button>
-                      <button
-                        onClick={() => setResourceView('list')}
-                        className={`p-1.5 rounded ${resourceView === 'list' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
-                        title="List View"
-                      >
-                        <List className="w-4 h-4 text-gray-600" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-6 flex flex-wrap gap-2">
-                  {['all', 'article', 'video', 'pdf', 'course', 'tool', 'webinar'].map(type => (
-                    <button
-                      key={type}
-                      onClick={() => setResourceType(type)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium
-                        ${resourceType === type
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'text-gray-600 hover:bg-gray-100'
-                        }`}
-                    >
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
-                <div className={resourceView === 'grid' ? 
-                  "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : 
-                  "space-y-4"
-                }>
-                  {renderResources()}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'messages' && (
-              <div className="flex h-screen overflow-hidden overscroll-none">
-                <MessageSquare className="w-12 h-12 mx-auto text-gray-400" />
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No Messages</h3>
-                <p className="mt-2 text-sm text-gray-500">Your inbox is empty. Messages from clients will appear here.</p>
-              </div>
-            )}
-            {activeTab === 'settings' && <ProfileSettings />}
-          </div>
+          {activeTab === 'messages' && (
+            <div className="text-center py-12">
+              <MessageSquare className="w-12 h-12 mx-auto text-gray-400" />
+              <h3 className="mt-4 text-lg font-medium text-gray-900">No Messages</h3>
+              <p className="mt-2 text-sm text-gray-500">Your inbox is empty. Messages from clients will appear here.</p>
+            </div>
+          )}
+          {activeTab === 'settings' && <ProfileSettings />}
         </div>
       </div>
 
-      {/* Modals */}
-      <NewClientModal
-        isOpen={showNewClientModal}
-        onClose={() => setShowNewClientModal(false)}
-        onSave={handleNewClient}
-      />
-      <ClientProfileModal
+      {/* User menu dropdown */}
+      {showUserMenu && (
+        <div className="origin-top-right absolute right-4 top-20 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <button
+            onClick={() => {
+              setActiveTab('settings');
+              setShowUserMenu(false);
+            }}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            Settings
+          </button>
+          <button
+            onClick={() => {
+              // Handle logout
+              setShowUserMenu(false);
+            }}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            Sign out
+          </button>
+        </div>
+      )}
         isOpen={showClientProfileModal}
         onClose={() => setShowClientProfileModal(false)}
         client={selectedClient}
