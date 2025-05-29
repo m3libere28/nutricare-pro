@@ -533,7 +533,7 @@ const NutriCarePro = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden touch-manipulation">
       <div className="flex">
         {/* Sidebar */}
         <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
@@ -558,7 +558,7 @@ const NutriCarePro = () => {
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-4 py-3">
-            <div className="flex items-center justify-between">
+            <div className="flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8 safe-area-inset-top">
               <h2 className="text-lg font-medium text-gray-900">
                 {navigation.find(item => item.id === activeTab)?.name}
               </h2>
@@ -581,10 +581,10 @@ const NutriCarePro = () => {
           </div>
 
           {/* Tab content */}
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {activeTab === 'dashboard' && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   <div className="bg-white shadow rounded-lg p-6">
                     <h3 className="text-lg font-medium text-gray-900">Upcoming Sessions</h3>
                     <p className="mt-2 text-3xl font-bold text-blue-600">
@@ -694,7 +694,7 @@ const NutriCarePro = () => {
 
             {activeTab === 'resources' && (
               <div>
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
+                <div className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${showSidebar ? 'translate-x-0' : '-translate-x-full'} safe-area-inset-left`}>
                   <div className="flex items-center space-x-4">
                     <h2 className="text-2xl font-bold text-gray-900">Resources</h2>
                     <button
@@ -760,40 +760,13 @@ const NutriCarePro = () => {
               </div>
             )}
 
-            {activeTab === 'assessments' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-gray-900">Assessments</h2>
-                  <button
-                    onClick={() => {
-                      setSelectedAssessment(null);
-                      setShowNewAssessmentForm(true);
-                    }}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Plus className="-ml-1 mr-2 h-5 w-5" />
-                    New Assessment
-                  </button>
-                </div>
-                <AssessmentStats assessments={assessments} />
-                <AssessmentList 
-                  assessments={assessments}
-                  onAssessmentSelect={(assessment) => {
-                    setSelectedAssessment(assessment);
-                    setShowAssessmentForm(true);
-                  }}
-                />
-              </div>
-            )}
-
             {activeTab === 'messages' && (
-              <div className="text-center py-12">
+              <div className="flex h-screen overflow-hidden overscroll-none">
                 <MessageSquare className="w-12 h-12 mx-auto text-gray-400" />
                 <h3 className="mt-4 text-lg font-medium text-gray-900">No Messages</h3>
                 <p className="mt-2 text-sm text-gray-500">Your inbox is empty. Messages from clients will appear here.</p>
               </div>
             )}
-
             {activeTab === 'settings' && <ProfileSettings />}
           </div>
         </div>
