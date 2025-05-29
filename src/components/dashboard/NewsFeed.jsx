@@ -17,14 +17,16 @@ export default function NewsFeed() {
   const fetchArticles = async () => {
     try {
       // Fetch from a nutrition/dietetics news API
-      // For demo, using sample data
+      // For demo, using sample data with real links
+      // Using high-quality, relevant images from Unsplash
       const sampleArticles = [
         {
           id: 1,
           title: "New Study Links Mediterranean Diet to Increased Longevity",
           source: "Journal of Nutrition",
           summary: "Recent research shows strong correlation between Mediterranean dietary patterns and increased life expectancy...",
-          image: "https://source.unsplash.com/random/800x600/?mediterranean,food",
+          image: "https://images.unsplash.com/photo-1559058789-672da06263d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          url: "https://www.health.harvard.edu/blog/a-practical-guide-to-the-mediterranean-diet-2019032116194",
           likes: 245,
           comments: 58,
           timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
@@ -34,7 +36,8 @@ export default function NewsFeed() {
           title: "Plant-Based Proteins: The Future of Sustainable Nutrition",
           source: "Dietetics Today",
           summary: "Exploring the environmental and health impacts of plant-based protein alternatives...",
-          image: "https://source.unsplash.com/random/800x600/?vegetables,protein",
+          image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          url: "https://www.eatright.org/food/nutrition/vegetarian-and-special-diets/building-a-healthy-vegetarian-meal-myths-and-facts",
           likes: 189,
           comments: 42,
           timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000)
@@ -44,7 +47,8 @@ export default function NewsFeed() {
           title: "AI in Nutrition: Personalized Meal Planning Revolution",
           source: "Tech & Health Weekly",
           summary: "How artificial intelligence is transforming the way we approach personalized nutrition...",
-          image: "https://source.unsplash.com/random/800x600/?technology,food",
+          image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          url: "https://www.sciencedaily.com/releases/2023/05/230515120942.htm",
           likes: 312,
           comments: 73,
           timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000)
@@ -113,31 +117,59 @@ export default function NewsFeed() {
               <span className="text-sm font-medium text-blue-600">{article.source}</span>
               <span className="text-sm text-gray-500">{formatTimestamp(article.timestamp)}</span>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">{article.title}</h3>
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block hover:text-blue-600"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{article.title}</h3>
+            </a>
             <p className="text-gray-600 mb-4">{article.summary}</p>
             
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
               <div className="flex space-x-4">
-                <button className="flex items-center text-gray-600 hover:text-blue-600">
+                <button 
+                  onClick={() => {
+                    const newLikes = articles.map(a =>
+                      a.id === article.id ? { ...a, likes: a.likes + 1 } : a
+                    );
+                    setArticles(newLikes);
+                  }}
+                  className="flex items-center text-gray-600 hover:text-blue-600"
+                >
                   <ThumbsUp className="w-5 h-5 mr-1" />
                   <span>{article.likes}</span>
                 </button>
-                <button className="flex items-center text-gray-600 hover:text-blue-600">
+                <button 
+                  onClick={() => {
+                    window.open(article.url + '#comments', '_blank', 'noopener,noreferrer');
+                  }}
+                  className="flex items-center text-gray-600 hover:text-blue-600"
+                >
                   <MessageSquare className="w-5 h-5 mr-1" />
                   <span>{article.comments}</span>
                 </button>
-                <button className="flex items-center text-gray-600 hover:text-blue-600">
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(article.url);
+                    addNotification({
+                      message: "Link copied to clipboard!",
+                      type: "success"
+                    });
+                  }}
+                  className="flex items-center text-gray-600 hover:text-blue-600"
+                >
                   <Share2 className="w-5 h-5" />
                 </button>
               </div>
               <a
-                href="#"
+                href={article.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                onClick={(e) => {
-                  e.preventDefault();
-                  // Open article in new tab
-                  window.open('#', '_blank');
-                }}
+                onClick={(e) => e.stopPropagation()}
               >
                 Read More
                 <ExternalLink className="w-4 h-4 ml-1" />

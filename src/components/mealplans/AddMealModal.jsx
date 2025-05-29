@@ -49,7 +49,7 @@ const AddMealModal = ({ isOpen, onClose, recipes = [], onAddMeal = () => {} }) =
       recipe.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || recipe.category === selectedCategory;
     const matchesDiet = selectedDiets.length === 0 || 
-      selectedDiets.every(diet => recipe.tags.includes(diet));
+      selectedDiets.every(diet => recipe.tags?.includes(diet));
     return matchesSearch && matchesCategory && matchesDiet;
   });
 
@@ -159,7 +159,7 @@ const AddMealModal = ({ isOpen, onClose, recipes = [], onAddMeal = () => {} }) =
                   <div className="mt-2 flex items-center justify-between text-sm">
                     <div className="text-gray-500">{recipe.calories} cal</div>
                     <div className="flex items-center space-x-2">
-                      {recipe.tags.slice(0, 2).map((tag, index) => (
+                      {recipe.tags?.slice(0, 2).map((tag, index) => (
                         <span
                           key={index}
                           className="px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 text-xs"

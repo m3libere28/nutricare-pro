@@ -1,9 +1,31 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import RecipeCard from './RecipeCard.jsx';
 
-const MealPlanCalendar = ({ selectedWeek = new Date(), onWeekChange = () => {}, mealPlan = [], onAddMeal = () => {} }) => {
-  const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const MealPlanCalendar = ({ selectedWeek = new Date(), onWeekChange, mealPlan = [], onAddMeal }) => {
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+
+  const renderMealCell = (dayIndex, mealType) => {
+    const meals = mealPlan[dayIndex]?.[mealType.toLowerCase()] || [];
+    return (
+      <td className="p-4 border border-gray-200">
+        <div className="space-y-4">
+          {meals.map((meal, index) => (
+            <div key={meal.id} className="bg-white rounded-lg shadow-sm p-2">
+              <RecipeCard recipe={meal} />
+            </div>
+          ))}
+          <button
+            onClick={() => onAddMeal(dayIndex, mealType)}
+            className="w-full py-2 px-4 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
+          >
+            + Add {mealType}
+          </button>
+        </div>
+      </td>
+    );
+  };
 
   const getDateForDay = (dayIndex) => {
     const date = new Date(selectedWeek);
@@ -47,59 +69,26 @@ const MealPlanCalendar = ({ selectedWeek = new Date(), onWeekChange = () => {}, 
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
+        <table className="min-w-full divide-y divide-gray-200 border border-gray-200">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="p-4 text-left bg-gray-50 border-b border-gray-200">
-                <span className="sr-only">Meal Type</span>
+              <th scope="col" className="w-24 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-200">
+                Time
               </th>
-              {weekDays.map((day, index) => (
-                <th
-                  key={day}
-                  className="p-4 text-left bg-gray-50 border-b border-gray-200 min-w-[200px]"
-                >
-                  <div className="font-medium text-gray-900">{day}</div>
-                  <div className="text-sm text-gray-500">{formatDate(getDateForDay(index))}</div>
+              {daysOfWeek.map((day) => (
+                <th key={day} scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-200">
+                  {day}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {mealTypes.map((mealType) => (
               <tr key={mealType}>
-                <td className="p-4 border-b border-gray-200 bg-gray-50 font-medium text-gray-900">
+                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border border-gray-200">
                   {mealType}
                 </td>
-                {weekDays.map((day, dayIndex) => {
-                  const meals = mealPlan[dayIndex]?.[mealType.toLowerCase()] || [];
-                  return (
-                    <td
-                      key={`${mealType}-${day}`}
-                      className="p-4 border-b border-gray-200"
-                    >
-                      <div className="space-y-2">
-                        {meals.map((meal, index) => (
-                          <div
-                            key={index}
-                            className="p-2 bg-gray-50 rounded-lg text-sm text-gray-900 flex items-center justify-between"
-                          >
-                            <span>{meal.name}</span>
-                            <div className="text-xs text-gray-500">
-                              {meal.calories} cal
-                            </div>
-                          </div>
-                        ))}
-                        <button
-                          onClick={() => onAddMeal(dayIndex, mealType)}
-                          className="w-full p-2 border border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-gray-400 hover:text-gray-600 flex items-center justify-center"
-                        >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Add {mealType}
-                        </button>
-                      </div>
-                    </td>
-                  );
-                })}
+                {Array.from({ length: 7 }, (_, i) => renderMealCell(i, mealType))}
               </tr>
             ))}
           </tbody>

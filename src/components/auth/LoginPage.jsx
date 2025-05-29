@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -7,6 +8,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,6 +18,7 @@ const LoginPage = () => {
       // Artificial delay to show loading state (1 second)
       await new Promise(resolve => setTimeout(resolve, 1000));
       await login(email, password);
+      navigate('/');
     } catch (err) {
       setError('Invalid email or password');
     } finally {
