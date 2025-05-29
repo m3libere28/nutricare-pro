@@ -9,7 +9,7 @@ const ClientGrid = ({ clients, onViewProfile, onScheduleSession }) => {
           key={client.id}
           client={client}
           onViewProfile={onViewProfile}
-          src={client.avatar || '/images/default-avatar.svg'}
+
           onScheduleSession={onScheduleSession}
         />
       ))}

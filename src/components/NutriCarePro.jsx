@@ -123,6 +123,16 @@ const NutriCarePro = () => {
     }
   };
 
+  const handleViewClientProfile = (client) => {
+    setSelectedClient(client);
+    setShowClientProfileModal(true);
+  };
+
+  const handleScheduleSessionClient = (client) => {
+    setSelectedClient(client);
+    setShowScheduleSessionModal(true);
+  };
+
   // Assessment data
   const [assessments, setAssessments] = useState([
     {
@@ -649,11 +659,9 @@ const NutriCarePro = () => {
                 </button>
               </div>
               <ClientGrid 
-                clients={clients}
-                onClientSelect={(client) => {
-                  setSelectedClient(client);
-                  setShowClientProfileModal(true);
-                }}
+                clients={clients} 
+                onViewProfile={handleViewClientProfile}
+                onScheduleSession={handleScheduleSessionClient}
               />
             </div>
           )}
@@ -822,6 +830,9 @@ const NutriCarePro = () => {
           </button>
         </div>
       )}
+
+      {/* Modals */}
+      <ClientProfileModal
         isOpen={showClientProfileModal}
         onClose={() => setShowClientProfileModal(false)}
         client={selectedClient}
